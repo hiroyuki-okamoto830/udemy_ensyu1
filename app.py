@@ -27,6 +27,13 @@ def app(environ, start_response):
             height = float(height_str)
             weight = float(weight_str)
 
+            # --- 0以上の値のみ許可（サーバ側） ---
+            if height < 0:
+                raise ValueError("身長は0以上の数値を入力してください。")
+
+            if weight < 0:
+                raise ValueError("体重は0以上の数値を入力してください。")
+
             # BMI計算（単位：身長 m）
             h_m = height / 100 if height else 0
             bmi = weight / (h_m ** 2) if h_m else 0
@@ -75,11 +82,11 @@ def app(environ, start_response):
 
         <form method="post">
           <label>身長(cm): 
-            <input type="number" id="height" name="height" step="any" required>
+            <input type="number" id="height" name="height" step="any" min="0" required>
           </label><br><br>
 
           <label>体重(kg): 
-            <input type="number" id="weight" name="weight" step="any" required>
+            <input type="number" id="weight" name="weight" step="any" min="0" required>
           </label><br><br>
 
           <button type="submit">計算</button>
@@ -101,3 +108,4 @@ if __name__ == "__main__":
     print(f"Server running on http://localhost:{port}")
     with make_server(host, port, app) as httpd:
         httpd.serve_forever()
+
