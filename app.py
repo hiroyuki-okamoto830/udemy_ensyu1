@@ -13,8 +13,19 @@ def app(environ, start_response):
             size = int(environ.get("CONTENT_LENGTH", 0))
             body = environ["wsgi.input"].read(size).decode("utf-8")
             params = parse_qs(body)
-            height = float(params.get("height", ["0"])[0]) or 0
-            weight = float(params.get("weight", ["0"])[0]) or 0
+
+            # --- 数値以外の入力を防止（サーバ側） ---
+            height_str = params.get("height", [""])[0]
+            weight_str = params.get("weight", [""])[0]
+
+            if not height_str.replace(".", "", 1).isdigit():
+                raise ValueError("身長は数値を入力してください。")
+
+            if not weight_str.replace(".", "", 1).isdigit():
+                raise ValueError("体重は数値を入力してください。")
+
+            height = float(height_str)
+            weight = float(weight_str)
 
             # BMI計算（単位：身長 m）
             h_m = height / 100 if height else 0
@@ -43,7 +54,7 @@ def app(environ, start_response):
     <html lang="ja">
       <head>
         <meta charset="utf-8">
-        <title>あなたのBMIを測定してみましょう</title>
+        <title>BMI計算機</title>
         <style>
           body {{ font-family: sans-serif; margin: 40px; background: #f9f9f9; }}
           h1 {{ background: #cde; padding: 10px; border-radius: 8px; }}
@@ -59,14 +70,21 @@ def app(environ, start_response):
         </script>
       </head>
       <body>
-        <h1>あなたのBMIを測定してみましょう</h1>
-        <p>このアプリでは、身長と体重を入力するだけであなたのBMIと肥満度が判定できます。</p>
+        <h1>BMI計算機</h1>
+
         <form method="post">
-          <label>身長(cm): <input type="text" id="height" name="height" step="any" required></label><br><br>
-          <label>体重(kg): <input type="text" id="weight" name="weight" step="any" required></label><br><br>
+          <label>身長(cm): 
+            <input type="number" id="height" name="height" step="any" required>
+          </label><br><br>
+
+          <label>体重(kg): 
+            <input type="number" id="weight" name="weight" step="any" required>
+          </label><br><br>
+
           <button type="submit">計算</button>
-          <button type="button" onclick="clearForm()">入力をリセット</button>
+          <button type="button" onclick="clearForm()">リセット</button>
         </form>
+
         <div style="margin-top:20px;">{result}</div>
       </body>
     </html>"""
