@@ -43,7 +43,7 @@ def app(environ, start_response):
     <html lang="ja">
       <head>
         <meta charset="utf-8">
-        <title>BMI計算機</title>
+        <title>あなたのBMIを測定してみましょう</title>
         <style>
           body {{ font-family: sans-serif; margin: 40px; background: #f9f9f9; }}
           h1 {{ background: #cde; padding: 10px; border-radius: 8px; }}
@@ -59,7 +59,8 @@ def app(environ, start_response):
         </script>
       </head>
       <body>
-        <h1>BMI計算機</h1>
+        <h1>あなたのBMIを測定してみましょう</h1>
+        <p>このアプリでは、身長と体重を入力するだけであなたのBMIと肥満度が判定できます。</p>
         <form method="post">
           <label>身長(cm): <input type="text" id="height" name="height" step="any" required></label><br><br>
           <label>体重(kg): <input type="text" id="weight" name="weight" step="any" required></label><br><br>
